@@ -60,6 +60,7 @@ function App() {
   const [showEpicCelebration, setShowEpicCelebration] = useState(false);
   const [hintUsedForCurrentFlag, setHintUsedForCurrentFlag] = useState(false);
   const [hintLettersRevealed, setHintLettersRevealed] = useState(0);
+  const [showHintTooltip, setShowHintTooltip] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -199,9 +200,18 @@ function App() {
     const value = e.target.value;
     setUserGuess(value);
     
+    // Hide hint tooltip when user starts typing
+    setShowHintTooltip(false);
+    
     const newSuggestions = getSuggestions(value);
     setSuggestions(newSuggestions);
-    setShowSuggestions(value.length > 0 && newSuggestions.length > 0);
+    const shouldShowSuggestions = value.length > 0 && newSuggestions.length > 0;
+    setShowSuggestions(shouldShowSuggestions);
+    
+    // Hide hint tooltip when autocomplete opens
+    if (shouldShowSuggestions) {
+      setShowHintTooltip(false);
+    }
     setSelectedSuggestionIndex(-1);
   };
 
@@ -458,9 +468,15 @@ function App() {
                   <span 
                     className="hint-link"
                     onClick={handleHint}
-                    title="Hint-assisted answers will break your streak."
+                    onMouseEnter={() => setShowHintTooltip(true)}
+                    onMouseLeave={() => setShowHintTooltip(false)}
                   >
                     Hint
+                    {showHintTooltip && (
+                      <div className="hint-tooltip">
+                        Hint-assisted answers will break your streak.
+                      </div>
+                    )}
                   </span>
                   <button 
                     type="submit" 

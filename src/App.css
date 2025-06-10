@@ -252,8 +252,7 @@ main {
   color: #333;
 }
 
-.hint-link[title]:hover::after {
-  content: attr(title);
+.hint-tooltip {
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -269,16 +268,14 @@ main {
   pointer-events: none;
 }
 
-.hint-link[title]:hover::before {
+.hint-tooltip::before {
   content: '';
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
   border-top-color: rgba(0, 0, 0, 0.9);
-  z-index: 1000;
-  pointer-events: none;
 }
 
 .hint {
