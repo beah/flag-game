@@ -14,6 +14,7 @@ interface Country {
   capital?: string[];
   population: number;
   region: string;
+  independent: boolean; // true for sovereign countries, false for territories
 }
 
 // Utility functions for daily flag tracking
@@ -124,7 +125,7 @@ function App() {
   const fetchCountries = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2,flags,capital,population,region');
+      const response = await fetch('https://restcountries.com/v3.1/all?fields=name,cca2,flags,capital,population,region,independent');
       
       if (!response.ok) {
         throw new Error('Failed to fetch countries');
@@ -132,8 +133,11 @@ function App() {
       
       const data: Country[] = await response.json();
       
+      // Filter to only include sovereign countries (independent: true)
+      const sovereignCountries = data.filter(country => country.independent === true);
+      
       // Sort countries alphabetically by common name
-      const sortedCountries = data.sort((a, b) => 
+      const sortedCountries = sovereignCountries.sort((a, b) => 
         a.name.common.localeCompare(b.name.common)
       );
       
@@ -263,9 +267,7 @@ function App() {
     }
   };
 
-  const handleSuggestionHover = (country: Country) => {
-    setUserGuess(country.name.common);
-  };
+
 
   const handleHint = () => {
     if (!currentFlag) return;
@@ -456,7 +458,6 @@ function App() {
                             index === selectedSuggestionIndex ? 'selected' : ''
                           }`}
                           onClick={() => handleSuggestionClick(country)}
-                          onMouseEnter={() => handleSuggestionHover(country)}
                         >
                           <span className="suggestion-name">{country.name.common}</span>
                         </div>
