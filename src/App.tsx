@@ -141,6 +141,19 @@ function App() {
         a.name.common.localeCompare(b.name.common)
       );
       
+      // Clear localStorage to prevent issues with old non-sovereign country data
+      // This ensures we start fresh with only sovereign countries
+      const todayKey = getTodayKey();
+      const currentCompleted = loadCompletedToday();
+      const validCompleted = Array.from(currentCompleted).filter(code => 
+        sortedCountries.some(country => country.cca2 === code)
+      );
+      
+      if (validCompleted.length !== currentCompleted.size) {
+        saveCompletedToday(new Set(validCompleted));
+        setCompletedToday(new Set(validCompleted));
+      }
+      
       setCountries(sortedCountries);
       setError(null);
     } catch (err) {
